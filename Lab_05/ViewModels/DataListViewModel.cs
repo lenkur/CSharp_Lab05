@@ -16,15 +16,13 @@ namespace KMA.CSharp2020.Lab05.ViewModel
         #region Fields
         private ObservableCollection<SingleProcess> _processList;
         private SingleProcess _selectedProcess;
-        private string _textFilter;
+        private string _textFilter = "";
         private ObservableCollection<string> _filterByList;
         private string _selectedFilter;
 
         private Thread _workingThread;
         private CancellationToken _token;
         private CancellationTokenSource _tokenSource;
-        private BackgroundWorker _backgroundWorker;
-        private Task _backgroundTask;
 
         #region Commands
         //private RelayCommand<object> _deletePersonCommand;
@@ -81,7 +79,7 @@ namespace KMA.CSharp2020.Lab05.ViewModel
         #endregion
 
         public DataListViewModel()
-        {
+        {            
             _processList = new ObservableCollection<SingleProcess>(StationManager.DataStorage.ProcessList);
             _filterByList = new ObservableCollection<string>();
             FilterByList.Add("Name");
@@ -105,50 +103,114 @@ namespace KMA.CSharp2020.Lab05.ViewModel
                     ProcessList = new ObservableCollection<SingleProcess>(
                         from process in StationManager.DataStorage.ProcessList
                         where process.Name.Contains(TextFilter)
+                        orderby process.Name
                         select process);
                     break;
                 case "ID":
                     ProcessList = new ObservableCollection<SingleProcess>(
                         from process in StationManager.DataStorage.ProcessList
+                        orderby process.Id
                         where process.Id.ToString().Contains(TextFilter)
                         select process);
                     break;
                 case "CPU":
                     ProcessList = new ObservableCollection<SingleProcess>(
                         from process in StationManager.DataStorage.ProcessList
+                        orderby process.CPU descending
                         where process.CPU.ToString().Contains(TextFilter)
                         select process);
                     break;
                 case "RAM":
                     ProcessList = new ObservableCollection<SingleProcess>(
                         from process in StationManager.DataStorage.ProcessList
+                        orderby process.RAM descending
                         where process.RAM.ToString().Contains(TextFilter)
                         select process);
                     break;
                 case "Threads":
                     ProcessList = new ObservableCollection<SingleProcess>(
                         from process in StationManager.DataStorage.ProcessList
+                        orderby process.Threads
                         where process.Threads.ToString().Contains(TextFilter)
                         select process);
                     break;
                 case "Start Time":
                     ProcessList = new ObservableCollection<SingleProcess>(
                         from process in StationManager.DataStorage.ProcessList
+                        orderby process.StartTime
                         where process.StartTime.Contains(TextFilter)
                         select process);
                     break;
                 case "User Name":
                     ProcessList = new ObservableCollection<SingleProcess>(
                         from process in StationManager.DataStorage.ProcessList
+                        orderby process.UserName
                         where process.UserName.Contains(TextFilter)
                         select process);
                     break;
                 case "File Path":
                     ProcessList = new ObservableCollection<SingleProcess>(
                         from process in StationManager.DataStorage.ProcessList
+                        orderby process.Path
                         where process.Path.Contains(TextFilter)
                         select process);
                     break;
+                default: break;
+            }
+        }
+        private void SortProcesses()
+        {
+            switch (SelectedFilter)
+            {
+                case "Name":
+                    ProcessList = new ObservableCollection<SingleProcess>(
+                        from process in StationManager.DataStorage.ProcessList
+                        orderby process.Name
+                        select process);
+                    break;
+                case "ID":
+                    ProcessList = new ObservableCollection<SingleProcess>(
+                        from process in StationManager.DataStorage.ProcessList
+                        orderby process.Id
+                        select process);
+                    break;
+                case "CPU":
+                    ProcessList = new ObservableCollection<SingleProcess>(
+                        from process in StationManager.DataStorage.ProcessList
+                        orderby process.CPU
+                        select process);
+                    break;
+                case "RAM":
+                    ProcessList = new ObservableCollection<SingleProcess>(
+                        from process in StationManager.DataStorage.ProcessList
+                        orderby process.RAM
+                        select process);
+                    break;
+                case "Threads":
+                    ProcessList = new ObservableCollection<SingleProcess>(
+                        from process in StationManager.DataStorage.ProcessList
+                        orderby process.Threads
+                        select process);
+                    break;
+                case "Start Time":
+                    ProcessList = new ObservableCollection<SingleProcess>(
+                        from process in StationManager.DataStorage.ProcessList
+                        orderby process.StartTime
+                        select process);
+                    break;
+                case "User Name":
+                    ProcessList = new ObservableCollection<SingleProcess>(
+                        from process in StationManager.DataStorage.ProcessList
+                        orderby process.UserName
+                        select process);
+                    break;
+                case "File Path":
+                    ProcessList = new ObservableCollection<SingleProcess>(
+                        from process in StationManager.DataStorage.ProcessList
+                        orderby process.Path
+                        select process);
+                    break;
+                default: break;
             }
         }
         private void StartWorkingThread()

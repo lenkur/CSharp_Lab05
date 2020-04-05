@@ -19,8 +19,7 @@ namespace KMA.CSharp2020.Lab05.Tools.DataStorage
             _accessDeniedProcessList = new List<int>();
             foreach (Process process in Process.GetProcesses())
             {
-
-                ProcessList.Add(new SingleProcess(process, AbleToAccess(process)));
+                ProcessList.Add(new SingleProcess(process));
             }
         }
 
@@ -49,12 +48,11 @@ namespace KMA.CSharp2020.Lab05.Tools.DataStorage
                 if (i != -1)
                     UpdateProcess(ProcessList[i]);
                 else
-                    ProcessList.Add(new SingleProcess(process, AbleToAccess(process)));
+                    ProcessList.Add(new SingleProcess(process));
             }
             ProcessList.RemoveAll(i => i.Updated == false);
             ProcessList.ForEach(i => i.Updated = false);
         }
-
 
         private bool AbleToAccess(Process process)
         {
@@ -64,17 +62,18 @@ namespace KMA.CSharp2020.Lab05.Tools.DataStorage
                 ProcessModule processModule = process.MainModule;
                 return true;
             }
-            catch (Win32Exception ex)
-            {
-                Console.WriteLine($"{ex.Message}\nProcess name:{process.ProcessName}");
-                AccessDeniedProcessList.Add(process.Id);
-                return false;
-            }
-            catch (InvalidOperationException ex)
-            {
-                Console.WriteLine($"{ex.Message}\nProcess name:{process.ProcessName}");
-                return false;
-            }
+            catch { AccessDeniedProcessList.Add(process.Id); return false; }
+            //catch (Win32Exception ex)
+            //{
+            //    Console.WriteLine($"{ex.Message}\nProcess name:{process.ProcessName}");
+                
+            //    return false;
+            //}
+            //catch (InvalidOperationException ex)
+            //{
+            //    Console.WriteLine($"{ex.Message}\nProcess name:{process.ProcessName}");
+            //    return false;
+            //}
         }
     }
 }

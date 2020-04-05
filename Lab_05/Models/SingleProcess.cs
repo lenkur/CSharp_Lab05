@@ -14,8 +14,9 @@ namespace KMA.CSharp2020.Lab05.Models
         private readonly string _name;
         private readonly int _id;
         //private readonly bool _active;
+        private float _cpu;
         //private readonly string _ramPercentage;
-        //private readonly long _ram;
+        private long _ram;
         private readonly string _userName;
         private readonly string _path;
         private readonly DateTime _startTime;
@@ -28,9 +29,9 @@ namespace KMA.CSharp2020.Lab05.Models
         public string Name { get { return _name; } }
         public int Id { get { return _id; } }
         public bool Active { get { return _process.Responding; } }
-        public float CPU { get { return _performanceCounter.NextValue() / Environment.ProcessorCount; } }
+        public float CPU { get { return _cpu; } }
         //public string RAMPercentage { get { return _ramPercentage; } }
-        public string RAM { get { return $"{_process.PrivateMemorySize64 / 1024} K"; } }
+        public long RAM { get { return _ram / 1024; } }
         public int Threads { get { return _process.Threads.Count; } }
         public string StartTime { get { return _startTime != DateTime.MinValue ? _startTime.ToString() : "[Access denied]"; } }
         public string UserName { get { return _userName; } }
@@ -38,7 +39,7 @@ namespace KMA.CSharp2020.Lab05.Models
         internal bool Updated { get { return _updated; } set { _updated = value; } }
         #endregion
 
-        public SingleProcess(Process process, bool access = false)
+        public SingleProcess(Process process)
         {
             _process = process;
             _performanceCounter = new PerformanceCounter("Process", "% Processor Time", process.ProcessName);
@@ -47,17 +48,18 @@ namespace KMA.CSharp2020.Lab05.Models
             _id = process.Id;
             //_ramPercentage
             _userName = GetProcessUser(process);
-            _updated = false;
-            if (access)
+            if (_userName == null)
+            {
+                _userName = "[Unable to get user]";
+                _startTime = DateTime.MinValue;
+                _path = "[Access denied]";
+            }
+            else
             {
                 _startTime = process.StartTime;
                 _path = process.MainModule.FileName;
             }
-            else
-            {
-                _startTime = DateTime.MinValue;
-                _path = "[Access denied]";
-            }
+            _updated = true;
         }
 
         private static string GetProcessUser(Process process)
@@ -91,6 +93,8 @@ namespace KMA.CSharp2020.Lab05.Models
 
         internal void Update()
         {
+            _cpu = _performanceCounter.NextValue() / Environment.ProcessorCount;
+            _ram = _process.PrivateMemorySize64;
             Updated = true;
         }
     }

@@ -24,41 +24,41 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"></ColumnDefinition>
                     <ColumnDefinition Width="*"></ColumnDefinition>
-                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <!--<ColumnDefinition Width="*"></ColumnDefinition>-->
                 </Grid.ColumnDefinitions>
                 <Label
                     Grid.Row="0" Grid.Column="0"
                     HorizontalAlignment="Stretch" VerticalAlignment="Center"
-                    Margin="10, 0" FontWeight="Bold"
-                    Content="Filter by:"></Label>
+                    Margin="30, 0" FontWeight="Bold"
+                    Content="Sort or filter by:"></Label>
                 <Label
                     Grid.Row="0" Grid.Column="1"
                     HorizontalAlignment="Stretch" VerticalAlignment="Center"
-                    Margin="10, 0" FontWeight="Bold"
-                    Content="Start entering:"></Label>
+                    Margin="30, 0" FontWeight="Bold"
+                    Content="Start entering to filter:"></Label>
                 <ComboBox
                     Grid.Row="1" Grid.Column="0"
                     HorizontalAlignment="Stretch" VerticalAlignment="Center"
-                    Padding="0, 10" Margin="5, 0" FontWeight="SemiBold"
+                    Padding="10, 10" Margin="15, 0" FontWeight="SemiBold"
                     ItemsSource="{Binding FilterByList}" SelectedItem="{Binding SelectedFilter}"
                     ></ComboBox>
                 <TextBox
                     Grid.Row="1" Grid.Column="1"
                     HorizontalAlignment="Stretch" VerticalAlignment="Center"
-                    Padding="0, 10" Margin="5, 0" FontWeight="SemiBold"
+                    Padding="10, 10" Margin="15, 0" FontWeight="SemiBold"
                     Text="{Binding TextFilter, UpdateSourceTrigger=PropertyChanged}"
                     ></TextBox>
-                <Button 
+                <!--<Button 
                     Grid.Row="1" Grid.Column="2" 
                     HorizontalAlignment="Center" VerticalAlignment="Center" 
-                    Margin="5" Padding="20, 2" Content="Back" 
-                    Command="{Binding BackToLogInCommand}"/>
+                    Margin="5" Padding="20, 2" Content="" 
+                    Command="{Binding }"/>-->
             </Grid>
             <DataGrid
-                Grid.Row="2" Grid.Column="0" Margin="15" 
+                Grid.Row="2" Grid.Column="0" Margin="15"
                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  
-                AutoGenerateColumns="False" SelectionMode="Single" BorderThickness="0.5"
-                ItemsSource="{Binding ProcessList, Mode=OneWay}" SelectedItem="{Binding SelectedProcess, Mode=TwoWay}">
+                AutoGenerateColumns="False" SelectionMode="Single" CanUserSortColumns="False"
+                ItemsSource="{Binding ProcessList, Mode=OneWay}" SelectedItem="{Binding SelectedProcess, Mode=OneWay}">
                 <DataGrid.Columns>
                     <DataGridTextColumn 
                         Header="Name" Width="Auto" Binding="{Binding Name, Mode=OneWay}"></DataGridTextColumn>
@@ -87,8 +87,8 @@
             <Button 
                 Grid.Row="3" Grid.Column="0" 
                 HorizontalAlignment="Center" VerticalAlignment="Center" 
-                Margin="5" Padding="20, 5" Content="Delete User" 
-                Command="{Binding DeletePersonCommand}"/>
+                Margin="5" Padding="20, 5" Content="Kill Process" 
+                Command="{Binding KillProcessCommand}"/>
         </Grid>
     </Grid>
 </UserControl>

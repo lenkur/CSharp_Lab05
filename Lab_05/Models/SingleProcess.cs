@@ -20,9 +20,10 @@ namespace KMA.CSharp2020.Lab05.Models
         private readonly string _userName;
         private readonly string _path;
         private readonly DateTime _startTime;
-        private Process _process;
+        private readonly Process _process;
         private PerformanceCounter _performanceCounter;
         private bool _updated;
+        private readonly bool _access;
         #endregion
 
         #region Properties
@@ -37,18 +38,21 @@ namespace KMA.CSharp2020.Lab05.Models
         public string UserName { get { return _userName; } }
         public string Path { get { return _path; } }
         internal bool Updated { get { return _updated; } set { _updated = value; } }
+        internal bool Accessible { get { return _access; } }
+        internal Process Process { get { return _process; } }
+
         #endregion
 
-        public SingleProcess(Process process)
+        public SingleProcess(Process process, bool access)
         {
             _process = process;
+            _access = access;
             _performanceCounter = new PerformanceCounter("Process", "% Processor Time", process.ProcessName);
             _performanceCounter.NextValue();
             _name = process.ProcessName;
             _id = process.Id;
             //_ramPercentage
-            _userName = GetProcessUser(process);
-            if (_userName == null)
+            if (!access)
             {
                 _userName = "[Unable to get user]";
                 _startTime = DateTime.MinValue;
@@ -56,6 +60,7 @@ namespace KMA.CSharp2020.Lab05.Models
             }
             else
             {
+                _userName = GetProcessUser(process);
                 _startTime = process.StartTime;
                 _path = process.MainModule.FileName;
             }
@@ -74,7 +79,7 @@ namespace KMA.CSharp2020.Lab05.Models
             }
             catch
             {
-                return null;
+                return "[Unable to get user]";
             }
             finally
             {

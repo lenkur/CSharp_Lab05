@@ -8,6 +8,7 @@ namespace KMA.CSharp2020.Lab05.Tools.DataStorage
     {
         int ProcessExists(int id);
         void UpdateProcess(SingleProcess process);
+        void KillProcess(SingleProcess selectedProcess);
         void UpdateList();
         List<SingleProcess> ProcessList { get; }
         List<int> AccessDeniedProcessList { get; }

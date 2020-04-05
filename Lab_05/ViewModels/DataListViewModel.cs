@@ -2,11 +2,8 @@
 using KMA.CSharp2020.Lab05.Tools.Managers;
 using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace KMA.CSharp2020.Lab05.ViewModel
@@ -25,7 +22,7 @@ namespace KMA.CSharp2020.Lab05.ViewModel
         private CancellationTokenSource _tokenSource;
 
         #region Commands
-        //private RelayCommand<object> _deletePersonCommand;
+        private RelayCommand<object> _killProcess;
         #endregion
         #endregion
 
@@ -79,7 +76,7 @@ namespace KMA.CSharp2020.Lab05.ViewModel
         #endregion
 
         public DataListViewModel()
-        {            
+        {
             _processList = new ObservableCollection<SingleProcess>(StationManager.DataStorage.ProcessList);
             _filterByList = new ObservableCollection<string>();
             FilterByList.Add("Name");
@@ -95,6 +92,28 @@ namespace KMA.CSharp2020.Lab05.ViewModel
             StartWorkingThread();
             StationManager.StopThreads += StopWorkingThread;
         }
+        public RelayCommand<Object> KillProcessCommand
+        {
+            get { return _killProcess ?? (_killProcess = new RelayCommand<object>(KillProcessCommandImplementation, o => CanExecuteCommand())); }
+        }
+
+        private void KillProcessCommandImplementation(object obj)
+        {
+            if (MessageBox.Show($"Kill Process {SelectedProcess.Id} {SelectedProcess.Name}?", "Are you sure?", MessageBoxButton.YesNo, MessageBoxImage.Exclamation) == MessageBoxResult.Yes)
+            {
+                if (SelectedProcess.Accessible)
+                    StationManager.DataStorage.KillProcess(SelectedProcess);
+                else
+                    MessageBox.Show($"Access denied", "", MessageBoxButton.OK, MessageBoxImage.Error);
+                FilterProcesses();
+            }
+        }
+
+        private bool CanExecuteCommand()
+        {
+            return SelectedProcess != null;
+        }
+
         private void FilterProcesses()
         {
             switch (SelectedFilter)
@@ -102,8 +121,8 @@ namespace KMA.CSharp2020.Lab05.ViewModel
                 case "Name":
                     ProcessList = new ObservableCollection<SingleProcess>(
                         from process in StationManager.DataStorage.ProcessList
-                        where process.Name.Contains(TextFilter)
                         orderby process.Name
+                        where process.Name.Contains(TextFilter)
                         select process);
                     break;
                 case "ID":
@@ -153,61 +172,6 @@ namespace KMA.CSharp2020.Lab05.ViewModel
                         from process in StationManager.DataStorage.ProcessList
                         orderby process.Path
                         where process.Path.Contains(TextFilter)
-                        select process);
-                    break;
-                default: break;
-            }
-        }
-        private void SortProcesses()
-        {
-            switch (SelectedFilter)
-            {
-                case "Name":
-                    ProcessList = new ObservableCollection<SingleProcess>(
-                        from process in StationManager.DataStorage.ProcessList
-                        orderby process.Name
-                        select process);
-                    break;
-                case "ID":
-                    ProcessList = new ObservableCollection<SingleProcess>(
-                        from process in StationManager.DataStorage.ProcessList
-                        orderby process.Id
-                        select process);
-                    break;
-                case "CPU":
-                    ProcessList = new ObservableCollection<SingleProcess>(
-                        from process in StationManager.DataStorage.ProcessList
-                        orderby process.CPU
-                        select process);
-                    break;
-                case "RAM":
-                    ProcessList = new ObservableCollection<SingleProcess>(
-                        from process in StationManager.DataStorage.ProcessList
-                        orderby process.RAM
-                        select process);
-                    break;
-                case "Threads":
-                    ProcessList = new ObservableCollection<SingleProcess>(
-                        from process in StationManager.DataStorage.ProcessList
-                        orderby process.Threads
-                        select process);
-                    break;
-                case "Start Time":
-                    ProcessList = new ObservableCollection<SingleProcess>(
-                        from process in StationManager.DataStorage.ProcessList
-                        orderby process.StartTime
-                        select process);
-                    break;
-                case "User Name":
-                    ProcessList = new ObservableCollection<SingleProcess>(
-                        from process in StationManager.DataStorage.ProcessList
-                        orderby process.UserName
-                        select process);
-                    break;
-                case "File Path":
-                    ProcessList = new ObservableCollection<SingleProcess>(
-                        from process in StationManager.DataStorage.ProcessList
-                        orderby process.Path
                         select process);
                     break;
                 default: break;

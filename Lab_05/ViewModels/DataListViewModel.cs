@@ -4,6 +4,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -82,6 +83,15 @@ namespace KMA.CSharp2020.Lab05.ViewModel
         public DataListViewModel()
         {
             _processList = new ObservableCollection<SingleProcess>(StationManager.DataStorage.ProcessList);
+            _filterByList = new ObservableCollection<string>();
+            FilterByList.Add("Name");
+            FilterByList.Add("ID");
+            FilterByList.Add("CPU");
+            FilterByList.Add("RAM");
+            FilterByList.Add("Threads");
+            FilterByList.Add("Start Time");
+            FilterByList.Add("User Name");
+            FilterByList.Add("File Path");
             _tokenSource = new CancellationTokenSource();
             _token = _tokenSource.Token;
             StartWorkingThread();
@@ -89,7 +99,57 @@ namespace KMA.CSharp2020.Lab05.ViewModel
         }
         private void FilterProcesses()
         {
-            throw new NotImplementedException();
+            switch (SelectedFilter)
+            {
+                case "Name":
+                    ProcessList = new ObservableCollection<SingleProcess>(
+                        from process in StationManager.DataStorage.ProcessList
+                        where process.Name.Contains(TextFilter)
+                        select process);
+                    break;
+                case "ID":
+                    ProcessList = new ObservableCollection<SingleProcess>(
+                        from process in StationManager.DataStorage.ProcessList
+                        where process.Id.ToString().Contains(TextFilter)
+                        select process);
+                    break;
+                case "CPU":
+                    ProcessList = new ObservableCollection<SingleProcess>(
+                        from process in StationManager.DataStorage.ProcessList
+                        where process.CPU.ToString().Contains(TextFilter)
+                        select process);
+                    break;
+                case "RAM":
+                    ProcessList = new ObservableCollection<SingleProcess>(
+                        from process in StationManager.DataStorage.ProcessList
+                        where process.RAM.ToString().Contains(TextFilter)
+                        select process);
+                    break;
+                case "Threads":
+                    ProcessList = new ObservableCollection<SingleProcess>(
+                        from process in StationManager.DataStorage.ProcessList
+                        where process.Threads.ToString().Contains(TextFilter)
+                        select process);
+                    break;
+                case "Start Time":
+                    ProcessList = new ObservableCollection<SingleProcess>(
+                        from process in StationManager.DataStorage.ProcessList
+                        where process.StartTime.Contains(TextFilter)
+                        select process);
+                    break;
+                case "User Name":
+                    ProcessList = new ObservableCollection<SingleProcess>(
+                        from process in StationManager.DataStorage.ProcessList
+                        where process.UserName.Contains(TextFilter)
+                        select process);
+                    break;
+                case "File Path":
+                    ProcessList = new ObservableCollection<SingleProcess>(
+                        from process in StationManager.DataStorage.ProcessList
+                        where process.Path.Contains(TextFilter)
+                        select process);
+                    break;
+            }
         }
         private void StartWorkingThread()
         {
@@ -106,6 +166,8 @@ namespace KMA.CSharp2020.Lab05.ViewModel
                     currentSelectedProcessId = SelectedProcess.Id;
                 }
                 StationManager.DataStorage.UpdateList();
+                ProcessList = new ObservableCollection<SingleProcess>(StationManager.DataStorage.ProcessList);
+                FilterProcesses();
 
                 foreach (SingleProcess singleProcess in ProcessList)
                 {

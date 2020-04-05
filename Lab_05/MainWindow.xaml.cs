@@ -1,28 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using KMA.CSharp2020.Lab05.Tools.DataStorage;
+using KMA.CSharp2020.Lab05.Tools.Managers;
+using System.ComponentModel;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
-namespace Lab_05
+namespace KMA.CSharp2020.Lab05
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
+        ProcessDataStorage _processDataStorage;
+
         public MainWindow()
         {
+            _processDataStorage = new ProcessDataStorage();
+            StationManager.Initialize(_processDataStorage);
             InitializeComponent();
+            DataContext = new MainWindowViewModel();
+        }
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            base.OnClosing(e);
+            StationManager.CloseApp();
         }
     }
 }

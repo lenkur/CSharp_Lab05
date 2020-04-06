@@ -7,7 +7,6 @@ namespace KMA.CSharp2020.Lab05.Tools.DataStorage
     internal interface IDataStorage
     {
         int ProcessExists(int id);
-        void UpdateProcess(SingleProcess process);
         void KillProcess(SingleProcess selectedProcess);
         void OpenFolder(SingleProcess selectedProcess);
         void UpdateList();

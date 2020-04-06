@@ -34,11 +34,6 @@ namespace KMA.CSharp2020.Lab05.Tools.DataStorage
             return -1; ;
         }
 
-        public void UpdateProcess(SingleProcess process)
-        {
-            process.Update();
-        }
-
         public void UpdateList()
         {
             Process[] newSession = Process.GetProcesses();
@@ -46,7 +41,7 @@ namespace KMA.CSharp2020.Lab05.Tools.DataStorage
             {
                 int i = ProcessExists(process.Id);
                 if (i != -1)
-                    UpdateProcess(ProcessList[i]);
+                    ProcessList[i].Update();
                 else
                     ProcessList.Add(new SingleProcess(process, AbleToAccess(process)));
             }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KMA.CSharp2020.Lab05.Tools.Managers;
+using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
@@ -8,17 +9,19 @@ namespace KMA.CSharp2020.Lab05.Models
     class SingleProcess
     {
         #region Fields
+        private static ulong _totalPhysicalMemory = new Microsoft.VisualBasic.Devices.ComputerInfo().TotalPhysicalMemory;
         private readonly string _name;
         private readonly int _id;
         //private readonly bool _active;
         private float _cpu;
-        //private readonly string _ramPercentage;
-        private long _ram;
+        private float _ramPercentage;
+        private float _ram;
         private readonly string _userName;
         private readonly string _path;
         private readonly DateTime _startTime;
         private readonly Process _process;
-        private PerformanceCounter _performanceCounter;
+        private PerformanceCounter _cpuPerformanceCounter;
+        private PerformanceCounter _ramPerformanceCounter;
         private bool _updated;
         private readonly bool _access;
         #endregion
@@ -28,8 +31,8 @@ namespace KMA.CSharp2020.Lab05.Models
         public int Id { get { return _id; } }
         public bool Active { get { return _process.Responding; } }
         public float CPU { get { return _cpu; } }
-        //public string RAMPercentage { get { return _ramPercentage; } }
-        public long RAM { get { return _ram / 1024; } }
+        public float RAMPercentage { get { return _ramPercentage; } }
+        public float RAM { get { return _ram; } }
         public int Threads { get { return _process.Threads.Count; } }
         public string StartTime { get { return _startTime != DateTime.MinValue ? _startTime.ToString() : "[Access denied]"; } }
         public string UserName { get { return _userName; } }
@@ -42,26 +45,35 @@ namespace KMA.CSharp2020.Lab05.Models
 
         public SingleProcess(Process process, bool access)
         {
-            _process = process;
-            _access = access;
-            _performanceCounter = new PerformanceCounter("Process", "% Processor Time", process.ProcessName);
-            _performanceCounter.NextValue();
-            _name = process.ProcessName;
-            _id = process.Id;
-            //_ramPercentage
-            if (!access)
+            try
             {
-                _userName = "[Unable to get user]";
-                _startTime = DateTime.MinValue;
-                _path = "[Access denied]";
+                _process = process;
+                _access = access;
+                _cpuPerformanceCounter = new PerformanceCounter("Process", "% Processor Time", process.ProcessName);
+                _cpuPerformanceCounter.NextValue();
+                _ramPerformanceCounter = new PerformanceCounter("Process", "Private Bytes", process.ProcessName);
+                _ramPerformanceCounter.NextValue();
+                _name = process.ProcessName;
+                _id = process.Id;
+                //_ramPercentage
+                if (!access)
+                {
+                    _userName = "[Unable to get user]";
+                    _startTime = DateTime.MinValue;
+                    _path = "[Access denied]";
+                }
+                else
+                {
+                    _userName = GetProcessUser(process);
+                    _startTime = process.StartTime;
+                    _path = process.MainModule.FileName;
+                }
+                _updated = true;
             }
-            else
+            catch (Exception e)
             {
-                _userName = GetProcessUser(process);
-                _startTime = process.StartTime;
-                _path = process.MainModule.FileName;
+                Console.WriteLine(e);
             }
-            _updated = true;
         }
 
         private static string GetProcessUser(Process process)
@@ -95,9 +107,18 @@ namespace KMA.CSharp2020.Lab05.Models
 
         internal void Update()
         {
-            _cpu = _performanceCounter.NextValue() / Environment.ProcessorCount;
-            _ram = _process.PrivateMemorySize64;
-            Updated = true;
+            try
+            {
+                _cpu = _cpuPerformanceCounter.NextValue() / Environment.ProcessorCount;
+                _ram = _ramPerformanceCounter.NextValue();
+                _ramPercentage = _ram / _totalPhysicalMemory * 100;
+                _ram /= 1024;
+                Updated = true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         }
     }
 }

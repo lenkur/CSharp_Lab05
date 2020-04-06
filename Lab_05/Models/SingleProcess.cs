@@ -1,10 +1,7 @@
-﻿using KMA.CSharp2020.Lab05.Tools.Managers;
-using System;
-using System.ComponentModel;
+﻿using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
-using System.Windows;
 
 namespace KMA.CSharp2020.Lab05.Models
 {

@@ -23,6 +23,7 @@ namespace KMA.CSharp2020.Lab05.ViewModel
 
         #region Commands
         private RelayCommand<object> _killProcess;
+        private RelayCommand<object> _openFolder;
         #endregion
         #endregion
 
@@ -92,6 +93,8 @@ namespace KMA.CSharp2020.Lab05.ViewModel
             StartWorkingThread();
             StationManager.StopThreads += StopWorkingThread;
         }
+
+        #region Commands
         public RelayCommand<Object> KillProcessCommand
         {
             get { return _killProcess ?? (_killProcess = new RelayCommand<object>(KillProcessCommandImplementation, o => CanExecuteCommand())); }
@@ -109,10 +112,24 @@ namespace KMA.CSharp2020.Lab05.ViewModel
             }
         }
 
+        public RelayCommand<Object> OpenFolderCommand
+        {
+            get { return _openFolder ?? (_openFolder = new RelayCommand<object>(OpenFolderCommandImplementation, o => CanExecuteCommand())); }
+        }
+
+        private void OpenFolderCommandImplementation(object obj)
+        {
+            if (SelectedProcess.Accessible)
+                StationManager.DataStorage.OpenFolder(SelectedProcess);
+            else
+                MessageBox.Show($"Access denied", "", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+
         private bool CanExecuteCommand()
         {
             return SelectedProcess != null;
         }
+        #endregion
 
         private void FilterProcesses()
         {

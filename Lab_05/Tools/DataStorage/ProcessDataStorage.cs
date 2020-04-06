@@ -84,5 +84,10 @@ namespace KMA.CSharp2020.Lab05.Tools.DataStorage
             }
             catch (Win32Exception e) { Console.WriteLine(e.Message); }
         }
+
+        public void OpenFolder(SingleProcess process)
+        {
+            Process.Start("explorer.exe", $"/select, \"{process.Path}\"");
+        }
     }
 }

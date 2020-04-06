@@ -79,11 +79,27 @@
                         Header="Path" Width="Auto" Binding="{Binding Path,Mode=OneWay}"></DataGridTextColumn>
                 </DataGrid.Columns>
             </DataGrid>
-            <Button 
-                Grid.Row="3" Grid.Column="0" 
-                HorizontalAlignment="Center" VerticalAlignment="Center" 
-                Margin="5" Padding="20, 5" Content="Kill Process" 
-                Command="{Binding KillProcessCommand}"/>
+            <Grid
+                 Grid.Row="3" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.25*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="0.25*"/>
+                </Grid.ColumnDefinitions>
+                <Button 
+                    Grid.Column="3"
+                    HorizontalAlignment="Center" VerticalAlignment="Center" 
+                    Margin="5" Padding="20, 5" Content="Open Folder" 
+                    Command="{Binding OpenFolderCommand}"/>
+                <Button 
+                    Grid.Column="4"
+                    HorizontalAlignment="Center" VerticalAlignment="Center" 
+                    Margin="5" Padding="20, 5" Content="Kill Process" 
+                    Command="{Binding KillProcessCommand}"/>
+            </Grid>
         </Grid>
     </Grid>
 </UserControl>

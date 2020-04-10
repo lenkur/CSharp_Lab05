@@ -231,9 +231,12 @@ namespace KMA.CSharp2020.Lab05.ViewModel
             while (!_token.IsCancellationRequested)
             {
                 StationManager.DataStorage.UpdateList();
+                if (_token.IsCancellationRequested) break;
                 ProcessList = new ObservableCollection<SingleProcess>(StationManager.DataStorage.ProcessList);
+                if (_token.IsCancellationRequested) break;
                 FilterProcesses();
-                Thread.Sleep(3000);
+                if (_token.IsCancellationRequested) break;
+                Thread.Sleep(2000);
             }
         }
         internal void StopWorkingThread()

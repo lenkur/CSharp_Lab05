@@ -1,5 +1,4 @@
-﻿using KMA.CSharp2020.Lab05.Tools.Managers;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
@@ -12,16 +11,16 @@ namespace KMA.CSharp2020.Lab05.Models
         private static ulong _totalPhysicalMemory = new Microsoft.VisualBasic.Devices.ComputerInfo().TotalPhysicalMemory;
         private readonly string _name;
         private readonly int _id;
-        //private readonly bool _active;
-        private float _cpu;
-        private float _ramPercentage;
+        private double _cpu;
+        private TimeSpan _oldCpu;
+        private double _CPU;
         private float _ram;
+        private DateTime _lastTime;
         private readonly string _userName;
         private readonly string _path;
         private readonly DateTime _startTime;
         private readonly Process _process;
         private PerformanceCounter _cpuPerformanceCounter;
-        //private PerformanceCounter _ramPerformanceCounter;
         private bool _updated;
         private readonly bool _access;
 
@@ -31,7 +30,7 @@ namespace KMA.CSharp2020.Lab05.Models
         public string Name { get { return _name; } }
         public int Id { get { return _id; } }
         public bool Active { get { return _process.Responding; } }
-        public float CPU { get { return _cpu; } }
+        public double CPU { get { return _cpu; } }
         public float RAMPercentage { get { return _ram * 1024 / _totalPhysicalMemory * 100; } }
         public float RAM { get { return _ram; } }
         public int Threads { get { return _process.Threads.Count; } }
@@ -52,8 +51,16 @@ namespace KMA.CSharp2020.Lab05.Models
             {
                 _process = process;
                 _access = access;
-                _cpuPerformanceCounter = new PerformanceCounter("Process", "% Processor Time", process.ProcessName);
-                _cpuPerformanceCounter.NextValue();
+                if (Accessible)
+                {
+                    _lastTime = DateTime.UtcNow;
+                    _oldCpu = process.TotalProcessorTime;
+                }
+                else
+                {
+                    _cpuPerformanceCounter = new PerformanceCounter("Process", "% Processor Time", process.ProcessName);
+                    _cpuPerformanceCounter.NextValue();
+                }
                 _ram = Process.PrivateMemorySize64 / 1024;
                 _name = process.ProcessName;
                 _id = process.Id;
@@ -111,7 +118,16 @@ namespace KMA.CSharp2020.Lab05.Models
         {
             try
             {
-                _cpu = _cpuPerformanceCounter.NextValue() / Environment.ProcessorCount;
+                if (Accessible)
+                {
+                    TimeSpan newCpu = Process.TotalProcessorTime;
+                    DateTime newTime = DateTime.UtcNow;
+                    _cpu = (float)(newCpu - _oldCpu).TotalMilliseconds / ((newTime - _lastTime).TotalMilliseconds * Environment.ProcessorCount) * 100;
+                    _oldCpu = newCpu;
+                    _lastTime = newTime;
+                }
+                else
+                    _cpu = _cpuPerformanceCounter.NextValue() / Environment.ProcessorCount;
                 Process.Refresh();
                 _ram = Process.PrivateMemorySize64 / 1024;
                 Updated = true;

@@ -64,7 +64,7 @@
                         Header="Active" Width="Auto" 
                         Binding="{Binding Active, Mode=OneWay}"></DataGridCheckBoxColumn>
                     <DataGridTextColumn 
-                        Header="CPU %" Width="Auto" Binding="{Binding CPU, Mode=OneWay}"></DataGridTextColumn>
+                        Header="CPU %" Width="Auto" Binding="{Binding CPU, Mode=OneWay, StringFormat={}{0:F4}}"></DataGridTextColumn>
                     <DataGridTextColumn 
                         Header="RAM" Width="Auto" Binding="{Binding RAM, Mode=OneWay, StringFormat={}{0:N0} K}"></DataGridTextColumn>
                     <DataGridTextColumn 

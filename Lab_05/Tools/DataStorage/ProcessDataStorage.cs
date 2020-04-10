@@ -45,18 +45,18 @@ namespace KMA.CSharp2020.Lab05.Tools.DataStorage
                 else
                     ProcessList.Add(new SingleProcess(process, AbleToAccess(process)));
             }
-            int length = ProcessList.Count;
-            for (int i = 0; i < length; i++)
-            {
-                if (ProcessList[i].Updated) ProcessList[i].Updated = false;
-                else
-                {
-                    ProcessList.RemoveAt(i);
-                    --i; --length;
-                }
-            }
-            //ProcessList.RemoveAll(i => i.Updated == false);
-            //ProcessList.ForEach(i => i.Updated = false);
+            //int length = ProcessList.Count;
+            //for (int i = 0; i < length; i++)
+            //{
+            //    if (ProcessList[i].Updated) ProcessList[i].Updated = false;
+            //    else
+            //    {
+            //        ProcessList.RemoveAt(i);
+            //        --i; --length;
+            //    }
+            //}
+            ProcessList.RemoveAll(i => i.Updated == false);
+            ProcessList.ForEach(i => i.Updated = false);
         }
 
         private bool AbleToAccess(Process process)

@@ -9,14 +9,14 @@ namespace KMA.CSharp2020.Lab05.Tools.DataStorage
     class ProcessDataStorage : IDataStorage
     {
         private List<SingleProcess> _processList;
-        private List<int> _accessDeniedProcessList;
+        private SingleProcess _selectedProcess;
         public List<SingleProcess> ProcessList { get { return _processList; } }
-        public List<int> AccessDeniedProcessList { get { return _accessDeniedProcessList; } }
+
+        public SingleProcess SelectedProcess { get { return _selectedProcess; } set { _selectedProcess = value; } }
 
         internal ProcessDataStorage()
         {
             _processList = new List<SingleProcess>();
-            _accessDeniedProcessList = new List<int>();
             foreach (Process process in Process.GetProcesses())
             {
                 ProcessList.Add(new SingleProcess(process, AbleToAccess(process)));
@@ -45,8 +45,18 @@ namespace KMA.CSharp2020.Lab05.Tools.DataStorage
                 else
                     ProcessList.Add(new SingleProcess(process, AbleToAccess(process)));
             }
-            ProcessList.RemoveAll(i => i.Updated == false);
-            ProcessList.ForEach(i => i.Updated = false);
+            int length = ProcessList.Count;
+            for (int i = 0; i < length; i++)
+            {
+                if (ProcessList[i].Updated) ProcessList[i].Updated = false;
+                else
+                {
+                    ProcessList.RemoveAt(i);
+                    --i; --length;
+                }
+            }
+            //ProcessList.RemoveAll(i => i.Updated == false);
+            //ProcessList.ForEach(i => i.Updated = false);
         }
 
         private bool AbleToAccess(Process process)
@@ -60,7 +70,6 @@ namespace KMA.CSharp2020.Lab05.Tools.DataStorage
             catch (Win32Exception ex)
             {
                 Console.WriteLine($"{ex.Message} Process name:{process.ProcessName}");
-                AccessDeniedProcessList.Add(process.Id);
                 return false;
             }
             catch (InvalidOperationException ex)

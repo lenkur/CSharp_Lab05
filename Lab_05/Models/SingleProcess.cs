@@ -21,9 +21,10 @@ namespace KMA.CSharp2020.Lab05.Models
         private readonly DateTime _startTime;
         private readonly Process _process;
         private PerformanceCounter _cpuPerformanceCounter;
-        private PerformanceCounter _ramPerformanceCounter;
+        //private PerformanceCounter _ramPerformanceCounter;
         private bool _updated;
         private readonly bool _access;
+
         #endregion
 
         #region Properties
@@ -31,7 +32,7 @@ namespace KMA.CSharp2020.Lab05.Models
         public int Id { get { return _id; } }
         public bool Active { get { return _process.Responding; } }
         public float CPU { get { return _cpu; } }
-        public float RAMPercentage { get { return _ramPercentage; } }
+        public float RAMPercentage { get { return _ram * 1024 / _totalPhysicalMemory * 100; } }
         public float RAM { get { return _ram; } }
         public int Threads { get { return _process.Threads.Count; } }
         public string StartTime { get { return _startTime != DateTime.MinValue ? _startTime.ToString() : "[Access denied]"; } }
@@ -40,6 +41,8 @@ namespace KMA.CSharp2020.Lab05.Models
         internal bool Updated { get { return _updated; } set { _updated = value; } }
         internal bool Accessible { get { return _access; } }
         internal Process Process { get { return _process; } }
+        internal ProcessThreadCollection ThreadList { get { return Process.Threads; } }
+        internal ProcessModuleCollection ModuleList { get { return Accessible ? Process.Modules : null; } }
 
         #endregion
 
@@ -51,8 +54,7 @@ namespace KMA.CSharp2020.Lab05.Models
                 _access = access;
                 _cpuPerformanceCounter = new PerformanceCounter("Process", "% Processor Time", process.ProcessName);
                 _cpuPerformanceCounter.NextValue();
-                _ramPerformanceCounter = new PerformanceCounter("Process", "Private Bytes", process.ProcessName);
-                _ramPerformanceCounter.NextValue();
+                _ram = Process.PrivateMemorySize64 / 1024;
                 _name = process.ProcessName;
                 _id = process.Id;
                 //_ramPercentage
@@ -110,9 +112,8 @@ namespace KMA.CSharp2020.Lab05.Models
             try
             {
                 _cpu = _cpuPerformanceCounter.NextValue() / Environment.ProcessorCount;
-                _ram = _ramPerformanceCounter.NextValue();
-                _ramPercentage = _ram / _totalPhysicalMemory * 100;
-                _ram /= 1024;
+                Process.Refresh();
+                _ram = Process.PrivateMemorySize64 / 1024;
                 Updated = true;
             }
             catch (Exception e)

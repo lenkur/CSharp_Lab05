@@ -53,12 +53,13 @@
                 Grid.Row="2" Grid.Column="0" Margin="15"
                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  
                 AutoGenerateColumns="False" SelectionMode="Single" CanUserSortColumns="False"
-                ItemsSource="{Binding ProcessList, Mode=OneWay}" SelectedItem="{Binding SelectedProcess, Mode=TwoWay}">
+                ItemsSource="{Binding ProcessList, Mode=OneWay}"
+                SelectedItem="{Binding SelectedProcess, Mode=TwoWay}">
                 <DataGrid.Columns>
                     <DataGridTextColumn 
-                        Header="Name" Width="Auto" Binding="{Binding Name, Mode=OneWay}"></DataGridTextColumn>
-                    <DataGridTextColumn 
                         Header="ID" Width="Auto" Binding="{Binding Id, Mode=OneWay}"></DataGridTextColumn>
+                    <DataGridTextColumn 
+                        Header="Name" Width="Auto" Binding="{Binding Name, Mode=OneWay}"></DataGridTextColumn>
                     <DataGridCheckBoxColumn 
                         Header="Active" Width="Auto" 
                         Binding="{Binding Active, Mode=OneWay}"></DataGridCheckBoxColumn>
@@ -92,6 +93,16 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="0.25*"/>
                 </Grid.ColumnDefinitions>
+                <Button 
+                    Grid.Column="1"
+                    HorizontalAlignment="Center" VerticalAlignment="Center" 
+                    Margin="5" Padding="20, 5" Content="Threads" 
+                    Command="{Binding ShowThreadsCommand}"/>
+                <Button 
+                    Grid.Column="2"
+                    HorizontalAlignment="Center" VerticalAlignment="Center" 
+                    Margin="5" Padding="20, 5" Content="Modules" 
+                    Command="{Binding ShowModulesCommand}"/>
                 <Button 
                     Grid.Column="3"
                     HorizontalAlignment="Center" VerticalAlignment="Center" 

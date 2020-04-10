@@ -1,5 +1,6 @@
 ﻿using KMA.CSharp2020.Lab05.Models;
 using KMA.CSharp2020.Lab05.Tools.Managers;
+using KMA.CSharp2020.Lab05.Views;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -24,6 +25,8 @@ namespace KMA.CSharp2020.Lab05.ViewModel
         #region Commands
         private RelayCommand<object> _killProcess;
         private RelayCommand<object> _openFolder;
+        private RelayCommand<object> _showThreads;
+        private RelayCommand<object> _showModules;
         #endregion
         #endregion
 
@@ -43,6 +46,7 @@ namespace KMA.CSharp2020.Lab05.ViewModel
             set
             {
                 _selectedProcess = value;
+                StationManager.DataStorage.SelectedProcess = value;
                 OnPropertyChanged();
             }
         }
@@ -71,6 +75,7 @@ namespace KMA.CSharp2020.Lab05.ViewModel
             set
             {
                 _selectedFilter = value;
+                FilterProcesses();
                 OnPropertyChanged();
             }
         }
@@ -121,6 +126,28 @@ namespace KMA.CSharp2020.Lab05.ViewModel
         {
             if (SelectedProcess.Accessible)
                 StationManager.DataStorage.OpenFolder(SelectedProcess);
+            else
+                MessageBox.Show($"Access denied", "", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+        public RelayCommand<Object> ShowThreadsCommand
+        {
+            get { return _showThreads ?? (_showThreads = new RelayCommand<object>(ShowThreadsCommandImplementation, o => CanExecuteCommand())); }
+        }
+
+        private void ShowThreadsCommandImplementation(object obj)
+        {
+            new ThreadListWindow().ShowDialog();
+        }
+
+        public RelayCommand<Object> ShowModulesCommand
+        {
+            get { return _showModules ?? (_showModules = new RelayCommand<object>(ShowModulesCommandImplementation, o => CanExecuteCommand())); }
+        }
+
+        private void ShowModulesCommandImplementation(object obj)
+        {
+            if (SelectedProcess.Accessible)
+                new ModuleListWindow().ShowDialog();
             else
                 MessageBox.Show($"Access denied", "", MessageBoxButton.OK, MessageBoxImage.Error);
         }
@@ -203,24 +230,10 @@ namespace KMA.CSharp2020.Lab05.ViewModel
         {
             while (!_token.IsCancellationRequested)
             {
-                int currentSelectedProcessId = -1;
-                if (SelectedProcess != null)
-                {
-                    currentSelectedProcessId = SelectedProcess.Id;
-                }
                 StationManager.DataStorage.UpdateList();
                 ProcessList = new ObservableCollection<SingleProcess>(StationManager.DataStorage.ProcessList);
                 FilterProcesses();
-
-                foreach (SingleProcess singleProcess in ProcessList)
-                {
-                    if (singleProcess.Id == currentSelectedProcessId)
-                    {
-                        SelectedProcess = singleProcess;
-                        break;
-                    }
-                }
-                Thread.Sleep(2000);
+                Thread.Sleep(3000);
             }
         }
         internal void StopWorkingThread()
